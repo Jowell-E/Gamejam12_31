@@ -7,10 +7,12 @@ public class Movement : MonoBehaviour {
 	public string sideways;
 	public string forward;
 	public string jumpButton;
+	public bool holding = false;
+	public Rigidbody heldObject;
 
 	Rigidbody rb;
 	CharacterController cc;
-	bool grounded = true;
+	public bool grounded = true;
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
@@ -26,7 +28,6 @@ public class Movement : MonoBehaviour {
 		}
 	}
 	void FixedUpdate(){
-
 		float moveX = Input.GetAxis (sideways)  * movementSpeed;
 		float moveY = Input.GetAxis (forward)  * movementSpeed;
 
@@ -34,14 +35,16 @@ public class Movement : MonoBehaviour {
 		Vector3 speed = new Vector3 (moveX, rb.velocity.y, moveY);
 
 		rb.velocity = transform.rotation * speed;
+		if (heldObject) {
+			speed = new Vector3 (moveX, heldObject.velocity.y, moveY);
+			heldObject.velocity = heldObject.transform.rotation * speed;
+		}
 
 		if (grounded) {
-			if (Input.GetButtonUp (jumpButton)) {
+			if (Input.GetButton (jumpButton)) {
+				grounded = false;
 				rb.velocity = new Vector3 (rb.velocity.x, jumpVelocity, rb.velocity.z);
 			}
 		}
-
-
-
 	}
 }
